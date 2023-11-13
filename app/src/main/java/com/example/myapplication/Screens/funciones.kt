@@ -1,5 +1,6 @@
 package com.example.myapplication.Screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,8 @@ import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 
 @Composable
@@ -35,29 +38,11 @@ fun Inicio() {
         onDismiss = { mostrarDialogo = true })
 
     if (mostrarDialogo) {
-        AlertDialog(
-            onDismissRequest = { mostrarDialogo = false },
-            title = {
-                Text(
-                    text = "Configuración",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            },
-            text = {
-                Text("Contenido del cuadro de diálogo")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        mostrarDialogo = false
-                    }
-                ) {
-                    Text("OK")
-                }
-            }
-        )
+        TextoDialogo(
+            mostrarDialogo = mostrarDialogo,
+            onDismiss = { mostrarDialogo = true},
+            textoMostrar = textoSaludar)
+
     }
 }
 
@@ -92,4 +77,40 @@ fun PantallaInicio(
                 .width(250.dp)
         )
     }
+}
+
+@Composable
+fun TextoDialogo(
+    mostrarDialogo: Boolean,
+    onDismiss: (Boolean) -> Unit,
+    textoMostrar: String
+) {
+    Dialog(
+        onDismissRequest = { onDismiss(mostrarDialogo) },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(top = 15.dp, bottom = 20.dp)
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(Color.LightGray),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Configuración",
+                modifier = Modifier
+                    .padding(bottom = 15.dp, start = 185.dp),
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+
+        }
+    }
+
 }
