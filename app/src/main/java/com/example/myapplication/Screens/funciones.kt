@@ -19,11 +19,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.myapplication.R
 
 
 @Composable
@@ -31,22 +35,47 @@ fun Inicio() {
 
     var textoSaludar by rememberSaveable { mutableStateOf("") }
     var mostrarDialogo by rememberSaveable { mutableStateOf(false) }
+    var contAccept by rememberSaveable { mutableStateOf(0) }
+    var contCancel by rememberSaveable { mutableStateOf(0) }
 
-    PantallaInicio(
-        textoMostrar = textoSaludar,
-        mostrarDialogo = false,
-        onDismiss = { mostrarDialogo = true })
-
-    if (mostrarDialogo) {
-        TextoDialogo(
-            mostrarDialogo = mostrarDialogo,
-            onDismiss = { mostrarDialogo = true },
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                painterResource(id = R.drawable.saludo),
+                contentScale = ContentScale.FillBounds
+            )
+    ) {
+        PantallaInicio(
             textoMostrar = textoSaludar,
-            onChange = { textoSaludar = it },
-            onCambioNombre = {textoSaludar = it},
-            onDismissOn = {mostrarDialogo = false}
-        )
+            mostrarDialogo = false,
+            onDismiss = { mostrarDialogo = true })
 
+        if (mostrarDialogo) {
+            TextoDialogo(
+                mostrarDialogo = mostrarDialogo,
+                textoMostrar = textoSaludar,
+
+                onCambio = { textoSaludar = it },
+                onCambioNombre = { textoSaludar = it },
+
+                onDismiss = { mostrarDialogo = true },
+                onDismissOn = { mostrarDialogo = false },
+
+                onLimpiar = { textoSaludar = "" },
+
+                contAccept = contAccept,
+                contCancel = contCancel,
+                suma = {
+                    if (contAccept == it) {
+                        contAccept++
+                    } else if (contCancel == it) {
+                        contCancel++
+                    }
+                }
+            )
+
+        }
     }
 }
 
@@ -74,11 +103,14 @@ fun PantallaInicio(
         Text(
             textoMostrar,
             fontSize = 20.sp,
+            color= Color.Red,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .border(2.dp, Color.Black)
-                .wrapContentHeight(Alignment.CenterVertically)
+                .align(Alignment.CenterHorizontally)
                 .height(50.dp)
                 .width(250.dp)
+                .background(Color.LightGray)
         )
     }
 }
@@ -87,13 +119,21 @@ fun PantallaInicio(
 @Composable
 fun TextoDialogo(
     mostrarDialogo: Boolean,
-    onDismiss: (Boolean) -> Unit,
     textoMostrar: String,
-    onChange: (String) -> Unit,
-    onDismissOn: (Boolean) -> Unit,
+
+    onCambio: (String) -> Unit,
     onCambioNombre: (String) -> Unit,
 
-) {
+    onDismiss: (Boolean) -> Unit,
+    onDismissOn: (Boolean) -> Unit,
+
+    contAccept: Int,
+    contCancel: Int,
+    suma: (Int) -> Unit,
+
+    onLimpiar: (String) -> Unit,
+
+    ) {
     Dialog(
         onDismissRequest = { onDismiss(mostrarDialogo) },
         properties = DialogProperties(
@@ -120,27 +160,53 @@ fun TextoDialogo(
             OutlinedTextField(
                 value = textoMostrar,
                 onValueChange = {
-                    onChange(it)
+                    onCambio(it)
                 },
                 label = { Text(text = "Introduce tu nombre.") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Blue,
+                    focusedBorderColor = Color.Red,
                     unfocusedBorderColor = Color.Blue,
                     textColor = Color.Green
                 )
             )
-            Row (
+            Row(
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 35.dp)
-            ){
+                    .padding(top = 20.dp)
+
+            ) {
                 Button(
                     onClick = {
-                    onDismissOn (mostrarDialogo)
-                    onCambioNombre (textoMostrar)
+                        onDismissOn(mostrarDialogo)
+                        onCambioNombre(textoMostrar)
+                        suma(contAccept)
                     },
                     Modifier.padding(end = 30.dp)
                 ) {
-                    Text(text = "aceptar")
+                    Text(
+                        text = "aceptar $contAccept",
+                        fontSize = 10.sp,
+                    )
+                }
+                Button(
+                    onClick = {
+                        onLimpiar(textoMostrar)
+                    },
+                    Modifier.padding(end = 30.dp)
+                ) {
+                    Text(
+                        text = "C",
+                        fontSize = 10.sp,
+                    )
+                }
+                Button(onClick = {
+                    onDismissOn(mostrarDialogo)
+                    suma(contCancel)
+                }
+                ) {
+                    Text(
+                        text = "Cancelar $contCancel",
+                        fontSize = 10.sp,
+                    )
                 }
             }
 
