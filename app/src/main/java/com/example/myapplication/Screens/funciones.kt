@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -100,18 +101,25 @@ fun PantallaInicio(
         ) {
             Text("Saludos", color = Color.White)
         }
-        Text(
-            textoMostrar,
-            fontSize = 20.sp,
-            color= Color.Red,
-            fontWeight = FontWeight.Bold,
+        Box(
             modifier = Modifier
                 .border(2.dp, Color.Black)
                 .align(Alignment.CenterHorizontally)
                 .height(50.dp)
                 .width(250.dp)
                 .background(Color.LightGray)
-        )
+                .fillMaxHeight()
+                .padding(vertical = 5.dp)
+        ) {
+            Text(
+                textoMostrar,
+                fontSize = 20.sp,
+                color= Color.Red,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
 }
 
@@ -166,7 +174,7 @@ fun TextoDialogo(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Red,
                     unfocusedBorderColor = Color.Blue,
-                    textColor = Color.Green
+                    textColor = Color.Black
                 )
             )
             Row(
