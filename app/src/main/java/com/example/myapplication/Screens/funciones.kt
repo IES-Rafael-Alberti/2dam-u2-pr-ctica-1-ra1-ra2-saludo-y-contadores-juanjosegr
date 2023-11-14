@@ -29,7 +29,7 @@ import androidx.compose.ui.window.DialogProperties
 @Composable
 fun Inicio() {
 
-    val textoSaludar by rememberSaveable { mutableStateOf("") }
+    var textoSaludar by rememberSaveable { mutableStateOf("") }
     var mostrarDialogo by rememberSaveable { mutableStateOf(false) }
 
     PantallaInicio(
@@ -40,8 +40,12 @@ fun Inicio() {
     if (mostrarDialogo) {
         TextoDialogo(
             mostrarDialogo = mostrarDialogo,
-            onDismiss = { mostrarDialogo = true},
-            textoMostrar = textoSaludar)
+            onDismiss = { mostrarDialogo = true },
+            textoMostrar = textoSaludar,
+            onChange = { textoSaludar = it },
+            onCambioNombre = {textoSaludar = it},
+            onDismissOn = {mostrarDialogo = false}
+        )
 
     }
 }
@@ -63,9 +67,9 @@ fun PantallaInicio(
             onClick = { onDismiss(mostrarDialogo) },
             modifier = Modifier
                 .padding(10.dp),
-            colors = ButtonDefaults.textButtonColors(Color.Red),
+            colors = ButtonDefaults.textButtonColors(Color.Blue),
         ) {
-            Text("Saludos", color = Color.Black)
+            Text("Saludos", color = Color.White)
         }
         Text(
             textoMostrar,
@@ -79,11 +83,16 @@ fun PantallaInicio(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextoDialogo(
     mostrarDialogo: Boolean,
     onDismiss: (Boolean) -> Unit,
-    textoMostrar: String
+    textoMostrar: String,
+    onChange: (String) -> Unit,
+    onDismissOn: (Boolean) -> Unit,
+    onCambioNombre: (String) -> Unit,
+
 ) {
     Dialog(
         onDismissRequest = { onDismiss(mostrarDialogo) },
@@ -104,11 +113,36 @@ fun TextoDialogo(
                 text = "Configuración",
                 modifier = Modifier
                     .padding(bottom = 15.dp, start = 185.dp),
-                color = Color.White,
+                color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
-
+            OutlinedTextField(
+                value = textoMostrar,
+                onValueChange = {
+                    onChange(it)
+                },
+                label = { Text(text = "Introduce tu nombre.") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Blue,
+                    unfocusedBorderColor = Color.Blue,
+                    textColor = Color.Green
+                )
+            )
+            Row (
+                modifier = Modifier
+                    .padding(top = 20.dp, start = 35.dp)
+            ){
+                Button(
+                    onClick = {
+                    onDismissOn (mostrarDialogo)
+                    onCambioNombre (textoMostrar)
+                    },
+                    Modifier.padding(end = 30.dp)
+                ) {
+                    Text(text = "aceptar")
+                }
+            }
 
         }
     }
